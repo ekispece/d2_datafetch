@@ -34,8 +34,8 @@ heroes_collection = database.heroes
 if heroes_collection.find_one() is None:
     import mount_db  # this should mount the necessary collections
 
-count = 0
 for a_hero in heroes_collection.find():
+    match_parsed = False
     hero = Hero(a_hero)
     print "Getting matches for hero : " + str(hero.localized_name)
     matches_per_hero = matches.fetch_match_history_per_hero(hero_id=hero.id)
@@ -46,6 +46,13 @@ for a_hero in heroes_collection.find():
                 match_relevant_info = {"match_id": a_match["match_id"]}
                 if match_history_collection.find_one({"match_id": a_match["match_id"]}) is None:
                     match_history_collection.insert_one(match_relevant_info)
+                else:
+                    match_parsed = True
+                    break
 
             last_match = a_match["match_id"]
+
+        if match_parsed:
+            break
+
         matches_per_hero = matches.fetch_match_history_per_hero(hero_id=hero.id, start_from=last_match)
