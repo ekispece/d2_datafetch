@@ -45,6 +45,7 @@ for a_hero in heroes_collection.find():
             if "lobby_type" in a_match and a_match["lobby_type"] in [0, 2, 5, 6, 7]:  # We are only interested in 5x5 games
                 match_relevant_info = {"match_id": a_match["match_id"]}
                 if match_history_collection.find_one({"match_id": a_match["match_id"]}) is None:
+                    match_relevant_info["fetched"] = False
                     match_history_collection.insert_one(match_relevant_info)
                 else:
                     match_parsed = True
