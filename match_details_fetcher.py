@@ -4,7 +4,7 @@ from d2_db import db
 from multiprocessing.dummy import Pool as ThreadPool
 from requests import exceptions
 
-pool = ThreadPool(100)
+pool = ThreadPool(10)
 
 
 def get_match_details(match_id):
@@ -57,6 +57,8 @@ def remove_useless_info(match_detail):
 # print str(match_id_collection.find().count())
 # for match_id in match_id_collection.find():
 def parse_match(match_id):
+    global match_details_collection
+    global match_id_collection
     if match_details_collection.find_one({"match_id": match_id["match_id"]}):
         return  # This match is already saved
     try:
@@ -73,9 +75,15 @@ def parse_match(match_id):
         return
 
 
+def parse_matches():
+    global match_id_collection
+    pool.map(parse_match, match_id_collection.find({"fetched": False}))
+    pool.close()
+    pool.join()
+
+
 # Go through every match_id available on the db
 database = db.get_database()
 match_id_collection = database.match_ids
 match_details_collection = database.match_details
-
-pool.map(parse_match, match_id_collection.find({"fetched": False}))
+# parse_matches()
