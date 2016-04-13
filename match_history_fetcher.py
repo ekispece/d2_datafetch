@@ -61,13 +61,14 @@ while True:
                         match_relevant_info["fetched"] = False
                         match_history_collection.insert_one(match_relevant_info)
                     else:
-                        match_parsed = True
-                        break
+                        continue
+                        # match_parsed = True
+                        # break
 
                 last_match = a_match["match_id"]
 
-            if match_parsed:
-                break
+            # if match_parsed:
+            #     break
 
             matches_per_hero = fetch_match_history_per_hero(hero_id=hero.id, start_from=last_match)
 
