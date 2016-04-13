@@ -73,7 +73,7 @@ while True:
 
     print ("parsing matches")
 
-    mdf.parse_matches()
+    # mdf.parse_matches()
 
     print ("Fetched matches for now, sleeping for 30m")
     time.sleep(60 * 30)

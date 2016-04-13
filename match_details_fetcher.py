@@ -27,7 +27,7 @@ def remove_useless_info(match_detail):
     del match_detail["radiant_win"]  # This is a dumb label, It's important, but needs more readability
     del match_detail["start_time"]
     del match_detail["match_seq_num"]
-    if match_detail["duration"] < 30 * 60:
+    if match_detail["duration"] < 15 * 60:
         return None
     del match_detail["duration"]
     del match_detail["tower_status_radiant"]
@@ -45,6 +45,8 @@ def remove_useless_info(match_detail):
     del match_detail["radiant_score"]
     del match_detail["dire_score"]
     for player_info in match_detail["players"]:
+        if "team" not in player_info:
+            return None  # this match is non-existent
         if player_info["hero_id"] == 0:
             del player_info
             continue
@@ -147,4 +149,5 @@ def parse_matches():
 database = db.get_database()
 match_id_collection = database.match_ids
 match_details_collection = database.match_details
+# match_id_collection.update_many({}, {"$set":{"fetched":False}})
 parse_matches()
