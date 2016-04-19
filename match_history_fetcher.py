@@ -41,10 +41,12 @@ heroes_collection = database.heroes
 if heroes_collection.find_one() is None:
     import mount_db  # this should mount the necessary collections
 
+hero_list = []
+for a_hero in heroes_collection.find():
+    hero_list.append(Hero(a_hero))
+
 while True:
-    for a_hero in heroes_collection.find():
-        match_parsed = False
-        hero = Hero(a_hero)
+    for hero in hero_list:
         print ("Getting matches for hero : " + str(hero.localized_name))
         matches_per_hero = fetch_match_history_per_hero(hero_id=hero.id)
         if matches_per_hero is None:
@@ -54,6 +56,10 @@ while True:
 
         for i in xrange(0, 5):
             last_match = None
+            if matches_per_hero is None:
+                print("Sleeping for 10 mins seeing if server gets back to normal")
+                time.sleep(10 * 60)
+                break
             for a_match in matches_per_hero:
                 if "lobby_type" in a_match and a_match["lobby_type"] in [0, 2, 5, 6, 7]:  # We are only interested in 5x5 games
                     match_relevant_info = {"match_id": a_match["match_id"]}
