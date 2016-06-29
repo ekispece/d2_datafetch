@@ -25,6 +25,9 @@ for item in items_list_collection.find():  # this creates the collection in case
 def parse_item_metrics(a_match):
     winner_label = a_match["winner"]
     for player in a_match["players"]:
+        if "team" not in player:
+            print a_match
+            continue
         is_win = (winner_label == player["team"])
         bought_items = []
         for item in player["items"]:

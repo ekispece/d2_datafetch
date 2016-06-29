@@ -30,7 +30,6 @@ def remove_useless_info(match_detail):
     if match_detail["duration"] < 15 * 60:
         # print "match lasted less than 15 min"
         return None
-    del match_detail["duration"]
     del match_detail["tower_status_radiant"]
     del match_detail["tower_status_dire"]
     del match_detail["barracks_status_radiant"]
@@ -46,6 +45,11 @@ def remove_useless_info(match_detail):
     del match_detail["radiant_score"]
     del match_detail["dire_score"]
     for player_info in match_detail["players"]:
+        if "leaver_status" in player_info:
+            if player_info["leaver_status"] > 1:  # 0 no abandon, 1 DC but no abandon, 2 onwards abandon
+                # print "a player abandoned the match"
+                return None
+            del player_info["leaver_status"]
         if player_info["hero_id"] == 0:
             del player_info
             continue
@@ -59,11 +63,6 @@ def remove_useless_info(match_detail):
         del player_info["player_slot"]
         del player_info["level"]
         del player_info["gold"]
-        if "leaver_status" in player_info:
-            if player_info["leaver_status"] > 1:  # 0 no abandon, 1 DC but no abandon, 2 onwards abandon
-                # print "a player abandoned the match"
-                return None
-            del player_info["leaver_status"]
         del player_info["gold_spent"]
         if "ability_upgrades" in player_info:
             del player_info["ability_upgrades"]
