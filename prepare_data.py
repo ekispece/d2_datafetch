@@ -9,13 +9,17 @@ import aggregate_metrics_heroes as amh
 from d2_db import db
 from d2_items import items_fetcher as ift
 from d2_heroes import heroes_fetcher as hf
+from d2_heroes import dyads
 from d2_ml import load_input_data as idata
+from d2_webscrap import matchups_dotabuff as matchups
 
 database = db.get_database()
 heroes_collection = database.heroes
 heroes_metrics_collection = database.heroes_metrics
 items_collection = database.items
 items_metrics_collection = database.items_metrics
+matchups_collection = database.matchups
+dyads_collection = database.heroes_dyads
 
 print('Checking heroes collection consistency')
 heroes_collection.drop()
@@ -50,6 +54,18 @@ heroes_metrics_collection.drop()
 amh.start()
 print('checking heroes metrics consistency')
 assert heroes_metrics_collection.count() == heroes_collection.count()
+print('ok')
+
+print('scraping stuff on the web, cause, they got the data for free, we want it!')
+matchups_collection.drop()
+matchups.extract()
+assert matchups_collection.count() == heroes_collection.count()
+print('ok')
+
+print('Calculating dyads')
+dyads_collection.drop()
+dyads.calculate_dyads()
+assert dyads_collection.count() == heroes_collection.count()
 print('ok')
 
 print('You may grab a cup of coffee now, preparing the whole data into a big file. This can take up a loooong time')
