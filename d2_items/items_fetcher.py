@@ -28,12 +28,14 @@ class ItemsFetcher:
     def extract_item_info(hero_info):
         return hero_info["localized_name"], hero_info["name"], hero_info["id"]
 
-data = db.get_database()
 
-if "items" in data.collection_names():
-    print("Items are already fetched")
-else:
-    items = ItemsFetcher()
-    items_info = items.get_items_info()
+def fetch():
+    data = db.get_database()
 
-    data.items.insert_many(items_info)
+    if "items" in data.collection_names():
+        print("Items are already fetched")
+    else:
+        items = ItemsFetcher()
+        items_info = items.get_items_info()
+
+        data.items.insert_many(items_info)

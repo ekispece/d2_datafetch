@@ -27,8 +27,8 @@ def remove_useless_info(match_detail):
     del match_detail["radiant_win"]  # This is a dumb label, It's important, but needs more readability
     del match_detail["start_time"]
     del match_detail["match_seq_num"]
-    if match_detail["duration"] < 15 * 60:
-        # print "match lasted less than 15 min"
+    if match_detail["duration"] < 13 * 60:
+        # print "match lasted less than 13 min"
         return None
     del match_detail["tower_status_radiant"]
     del match_detail["tower_status_dire"]

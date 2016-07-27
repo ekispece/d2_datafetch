@@ -4,7 +4,7 @@ import time
 from dota2py import api as dota_api
 from d2_db import db
 from hero import Hero
-import match_details_fetcher as mdf
+# import match_details_fetcher as mdf
 
 skill = 3
 
@@ -44,6 +44,8 @@ if heroes_collection.find_one() is None:
 hero_list = []
 for a_hero in heroes_collection.find():
     hero_list.append(Hero(a_hero))
+
+# print "I get to here"
 
 while True:
     for hero in hero_list:
