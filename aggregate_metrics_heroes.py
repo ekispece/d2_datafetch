@@ -14,23 +14,23 @@ def start():
     items = {}
 
     for item in items_list_collection.find():
-        items[item["id"]] = {"bought": 0L}
+        items[item["id"]] = {"bought": 0}
 
     for hero in heroes_list_collection.find():
         heroes[hero["id"]] = {
-            "wins": 0L,
-            "games": 0L,
-            "won_match_duration": 0L,
-            "gold": 0L,
-            "xp": 0L,
-            "tower_damage": 0L,
-            "hero_damage": 0L,
-            "hero_healing": 0L,
-            "last_hits": 0L,
-            "denies": 0L,
-            "kills": 0L,
-            "deaths": 0L,
-            "assists": 0L,
+            "wins": 0,
+            "games": 0,
+            "won_match_duration": 0,
+            "gold": 0,
+            "xp": 0,
+            "tower_damage": 0,
+            "hero_damage": 0,
+            "hero_healing": 0,
+            "last_hits": 0,
+            "denies": 0,
+            "kills": 0,
+            "deaths": 0,
+            "assists": 0,
             "items": deepcopy(items)
         }
 
@@ -55,7 +55,7 @@ def start():
             for item in player["items"]:
                 heroes[player["hero_id"]]["items"][item["item_id"]]["bought"] += 1
 
-    for k, v in heroes.iteritems():
+    for k, v in heroes.items():
         heroes_metrics_collection.insert_one({
             "hero_id": k,
             "wins": v["wins"],
@@ -71,7 +71,7 @@ def start():
             "kills": v["kills"],
             "deaths": v["deaths"],
             "assists": v["assists"],
-            "items": {str(k): i for k, i in v["items"].iteritems() if i["bought"] > 0}
+            "items": {str(k): i for k, i in v["items"].items() if i["bought"] > 0}
         })
 
         # "wins": 0L,

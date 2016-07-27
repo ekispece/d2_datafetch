@@ -1,9 +1,10 @@
 #!/usr/bin/python
+from __future__ import print_function
 from dota2py import api as dota_api
 from d2_db import db
 from multiprocessing.dummy import Pool as ThreadPool
 from requests import exceptions
-import json
+from d2_items import useless_items_list
 
 pool = ThreadPool(10)
 
@@ -66,15 +67,8 @@ def remove_useless_info(match_detail):
         del player_info["gold_spent"]
         if "ability_upgrades" in player_info:
             del player_info["ability_upgrades"]
-        useless_items = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 237, 12, 182, 246, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-                         23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 38, 216, 39, 40, 42, 43, 217, 218, 241, 45, 46, 47,
-                         219, 48, 220, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 66, 67, 68, 69,
-                         70, 71, 72, 74, 76, 78, 80, 84, 85, 86, 87, 88, 89, 91, 93, 94, 95, 97, 99, 233, 101, 103, 197,
-                         198, 199, 200, 105, 191, 192, 107, 109, 111, 113, 115, 117, 118, 120, 122, 221, 124, 243, 126,
-                         128, 129, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 234, 150, 183, 248, 153, 155, 157,
-                         159, 161, 163, 165, 167, 169, 171, 173, 195, 175, 177, 179, 228, 184, 186, 227, 188, 189, 230,
-                         205, 238, 239, 207, 209, 211, 213, 214, 215, 253, 1000, 1001, 1002, 1003, 1004, 1005, 1006,
-                         1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020]
+        useless_items = useless_items_list.get_useless_items_list()
+
         items = []
         # thanks steamApi for this shitty interface
         if player_info["item_0"] not in useless_items:
@@ -136,7 +130,7 @@ def parse_match(match_id):
         match_details_collection.insert_one(match_detail)
 
     except exceptions.HTTPError:
-        print "Server or request error. Match was not parsed, continuing"
+        print("Server or request error. Match was not parsed, continuing")
         return
 
 

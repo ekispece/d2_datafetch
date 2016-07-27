@@ -35,6 +35,8 @@ def prepare_data():
     for item in items_list_collection.find():
         items_list[item["id"]] = item
 
+    print(items_list)
+
     total_matches = match_details_collection.count()
     total_sint_matches = total_matches * 5
 

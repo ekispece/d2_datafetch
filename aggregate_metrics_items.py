@@ -1,3 +1,4 @@
+from __future__ import print_function
 from d2_db import db
 from d2_items.useless_items_list import get_useless_items_list
 
@@ -24,8 +25,8 @@ def start():
         winner_label = a_match["winner"]
         for player in a_match["players"]:
             if "team" not in player:
-                print "match not found"
-                print a_match
+                print("match not found")
+                print(a_match)
                 match_details_collection.remove({'_id': a_match['_id']})
                 continue
             is_win = (winner_label == player["team"])

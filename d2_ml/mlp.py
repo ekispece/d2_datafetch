@@ -1,3 +1,4 @@
+from __future__ import print_function
 from collections import Counter
 
 import numpy as np
@@ -31,7 +32,7 @@ def validate_model(d, n):
             hits += 1
         else:
             misses += 1
-    print "Validation accuracy", float(hits)/(hits + misses)
+    print("Validation accuracy", float(hits) / (hits + misses))
 
 
 features_per_hero = 16  # hero_id, agpm, axpm, awr, akda, ahd, atd, ahh, alh, adn, item123, item123wr
@@ -41,7 +42,7 @@ total_features = features_per_hero * heroes_per_match
 load_save = False
 rank_size = 15
 
-print "Building network"
+print("Building network")
 
 network = Sequential(
     [
@@ -70,26 +71,26 @@ network = Sequential(
     ]
 )
 
-print "done"
+print("done")
 # print network.summary()
 
 network.compile(optimizer='nadam', loss='kld', metrics=['accuracy'])
 
 if load_save:
-    print "loading previously saved network"
+    print("loading previously saved network")
     network.load_weights("model_mlp.d2")
 
-print "Loading input info"
+print("Loading input info")
 data = np.load("d2_d.npy")
-print "loaded. Data obj shape:", data.shape
+print("loaded. Data obj shape:", data.shape)
 val_data_size = int(data.shape[0] * 0.2)
 data_size = data.shape[0] - val_data_size  # 80/20 validation training split
 val_data = data[data_size: data.shape[0], :]
 data = data[0:data_size, :]
 
 best_val_acc = -1.0
-for shuf in xrange(100):
-    print "Shuffling data"
+for shuf in range(100):
+    print("Shuffling data")
     # loading input data
     np.random.shuffle(data)
     l = data[:, -1]
@@ -97,14 +98,14 @@ for shuf in xrange(100):
     max_data = 1250
     masks = []
 
-    print "Making sure there's isn't too much data imbalance, max labels for classes set as " + str(max_data)
-    print "actual elements for each label: "
-    print j
-    print "total inputs " + str(l.shape[0])
+    print("Making sure there's isn't too much data imbalance, max labels for classes set as " + str(max_data))
+    print("actual elements for each label: ")
+    print(j)
+    print("total inputs " + str(l.shape[0]))
 
     print ("#" * 10) + "\nStarting undersampling"
 
-    for k, v in j.iteritems():
+    for k, v in j.items():
         mask = (data[:, -1] == k)
         if v > max_data:
             x = 0
@@ -114,18 +115,18 @@ for shuf in xrange(100):
                 x = idx
         masks.append(mask)
 
-    for i in xrange(len(masks) - 1):
+    for i in range(len(masks) - 1):
         masks[i + 1] = np.ma.mask_or(masks[i], masks[i + 1])
 
-    print "finished"
+    print("finished")
 
     dx = data[masks[-1] == 1, :]
     l = dx[:, -1]
     j = Counter(l)
     # print dx
-    print "Total inputs after reduction " + str(l.shape[0])
-    print "class balance after undersampling"
-    print j
+    print("Total inputs after reduction " + str(l.shape[0]))
+    print("class balance after undersampling")
+    print(j)
 
     # # undersampling to reduce class imbalance problem
     # for i, label in enumerate(data[:, -1]):
@@ -135,7 +136,7 @@ for shuf in xrange(100):
     #
     # print j
 
-    print "Starting optimization"
+    print("Starting optimization")
 
     information_gain = 5
     this_batch_loss = 10.0
@@ -151,11 +152,11 @@ for shuf in xrange(100):
             y_in[ix][val] = 1.0
 
         x_in = dx[:, 0:-1]
-        print "Iteration " + str(it)
+        print("Iteration " + str(it))
         hist = network.fit(x_in, y_in, batch_size=32, nb_epoch=1)
 
         filename = "model_mlp.d2"
-        print "Saving model to file " + filename
+        print("Saving model to file " + filename)
         # network.save_weights(filename, True)
 
         # if hist.history["val_loss"][0] < this_batch_loss:
@@ -165,4 +166,4 @@ for shuf in xrange(100):
         #     information_gain -= 1
         # print "Info gain : " + str(information_gain)
 
-        print "Validating model generated"
+        print("Validating model generated")

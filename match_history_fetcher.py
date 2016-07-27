@@ -56,7 +56,7 @@ while True:
             time.sleep(10*60)
             break
 
-        for i in xrange(0, 5):
+        for i in range(0, 5):
             last_match = None
             if matches_per_hero is None:
                 print("Sleeping for 10 mins seeing if server gets back to normal")

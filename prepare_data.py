@@ -18,8 +18,8 @@ items_collection = database.items
 items_metrics_collection = database.items_metrics
 
 print('Checking heroes collection consistency')
-if heroes_collection.count() == 0:
-    hf.fetch()
+heroes_collection.drop()
+hf.fetch()
 
 # asserting we have the correct number of heroes in the db
 print('Heroes collection mounted, checking whether there\'s 111 heroes')
@@ -27,8 +27,8 @@ assert heroes_collection.count() == 111
 print('ok')
 
 print('Checking items collection consistency')
-if items_collection.count() == 0:
-    ift.fetch()
+items_collection.drop()
+ift.fetch()
 
 print('Items collection mounted, checking whether there\'s all items in it')
 # This might change from time to time, since new items are added consistently
