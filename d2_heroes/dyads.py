@@ -5,8 +5,6 @@ from d2_db import db
 # Can also be used to calculate matchups
 # Reason why it's not used to calculate matchups is that we're using dotabuff's advantage metric
 def calculate_dyads():
-    print('i\'m here')
-    raw_input()
     database = db.get_database()
     heroes_collection = database.heroes
     matches_collection = database.match_details

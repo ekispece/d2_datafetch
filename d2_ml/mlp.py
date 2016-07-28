@@ -35,11 +35,11 @@ def validate_model(d, n):
     print("Validation accuracy", float(hits) / (hits + misses))
 
 
-features_per_hero = 16  # hero_id, agpm, axpm, awr, akda, ahd, atd, ahh, alh, adn, item123, item123wr
-heroes_per_match = 9
-total_features = features_per_hero * heroes_per_match
+# features_per_hero = 16  # hero_id, agpm, axpm, awr, akda, ahd, atd, ahh, alh, adn, item123, item123wr
+# heroes_per_match = 9
+total_features = 226
 
-load_save = False
+load_save = True
 rank_size = 15
 
 print("Building network")
@@ -81,7 +81,7 @@ if load_save:
     network.load_weights("model_mlp.d2")
 
 print("Loading input info")
-data = np.load("d2_d.npy")
+data = np.load("../d2_d.npy")
 print("loaded. Data obj shape:", data.shape)
 val_data_size = int(data.shape[0] * 0.2)
 data_size = data.shape[0] - val_data_size  # 80/20 validation training split
@@ -103,7 +103,7 @@ for shuf in range(100):
     print(j)
     print("total inputs " + str(l.shape[0]))
 
-    print ("#" * 10) + "\nStarting undersampling"
+    print(("#" * 10) + "\nStarting undersampling")
 
     for k, v in j.items():
         mask = (data[:, -1] == k)
@@ -157,7 +157,7 @@ for shuf in range(100):
 
         filename = "model_mlp.d2"
         print("Saving model to file " + filename)
-        # network.save_weights(filename, True)
+        network.save_weights(filename, True)
 
         # if hist.history["val_loss"][0] < this_batch_loss:
         #     information_gain += 1 if information_gain < 5 else 0

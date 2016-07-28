@@ -12,9 +12,10 @@ from keras.layers.normalization import BatchNormalization
 from keras.models import Sequential
 from d2_db import db
 
-features_per_hero = 16  # hero_id, agpm, axpm, awr, akda, ahd, atd, ahh, alh, adn, item123, item123wr
-heroes_per_match = 9
-total_features = features_per_hero * heroes_per_match
+#
+# features_per_hero = 16  # hero_id, agpm, axpm, awr, akda, ahd, atd, ahh, alh, adn, item123, item123wr
+# heroes_per_match = 9
+total_features = 226
 hero_choices = 5
 
 database = db.get_database()
@@ -22,11 +23,17 @@ heroes_list_collection = database.heroes
 match_details_collection = database.match_details
 heroes_metrics_collection = database.heroes_metrics
 items_list_collection = database.items_metrics
+dyads_list_collection = database.heroes_dyads
+hero_matchups_list_collection = database.matchups
 
 heroes_id_dfid_translate = {}
+heroes_dfid_id_translate = {}
 
 for hero in heroes_list_collection.find():
     heroes_id_dfid_translate[hero['id']] = hero['id_df']
+
+for hero in heroes_list_collection.find():
+    heroes_dfid_id_translate[hero['id_df']] = hero['id']
 
 network = Sequential(
     [
@@ -50,7 +57,7 @@ network = Sequential(
         Dropout(0.2),
         Activation('relu'),
         BatchNormalization(),
-        Dense(114),
+        Dense(111),
         Activation('softmax')
     ]
 )
@@ -58,11 +65,12 @@ network = Sequential(
 network.compile(optimizer='nadam', loss='kld', metrics=['accuracy'])
 network.load_weights("model_mlp.d2")
 
-
 heroes_list = {}
 items_list = {}
 heroes_name_list = {}
 m = []
+dyads_list = {}
+matchups_list = {}
 
 for hero in heroes_metrics_collection.find():
     heroes_list[hero["hero_id"]] = hero
@@ -73,8 +81,15 @@ for hero in heroes_list_collection.find():
 for item in items_list_collection.find():
     items_list[item["id"]] = item
 
-winners = [7, 18, 76, 36]
-losers = [11, 70, 29, 5, 74]
+for hero_dyad in dyads_list_collection.find():
+    dyads_list[hero_dyad['hero_id']] = hero_dyad['dyads']
+
+for hero_matchup in hero_matchups_list_collection.find():
+    matchups_list[hero_matchup['hero_id']] = hero_matchup['matchups']
+
+winners = [109, 29, 111, 5]
+losers = [32, 79, 98, 51, 10]
+winner = 'radiant'
 
 for hero_id in losers:
     m.append(heroes_id_dfid_translate[hero_id])
@@ -103,8 +118,14 @@ for hero_id in losers:
     h_i1_wr = float(h_i1_["wins"]) / h_i1_["times_bought"]
     h_i2_wr = float(h_i2_["wins"]) / h_i2_["times_bought"]
     h_i3_wr = float(h_i3_["wins"]) / h_i3_["times_bought"]
-    m.extend((h_gpm, h_xpm, h_wr, h_kda, h_hd, h_td, h_hh, h_lh, h_den, int(h_i1), h_i1_wr, int(h_i2),
+    m.extend((h_wmd, h_gpm, h_xpm, h_wr, h_kda, h_hd, h_td, h_hh, h_lh, h_den, int(h_i1), h_i1_wr, int(h_i2),
               h_i2_wr, int(h_i3), h_i3_wr))
+    rest_of_team = [x for x in losers if not x == hero_id]
+    assert len(rest_of_team) == 4
+    # print(hero_id, rest_of_team)
+    dyads_ = [(float(dyads_list[hero_id].get(str(x), dict()).get('wins', 0)) / dyads_list[hero_id].get(str(x), dict())
+               .get('matches', 1)) for x in rest_of_team]
+    m.extend(dyads_)
 
 for hero_id in winners:
     m.append(heroes_id_dfid_translate[hero_id])
@@ -133,27 +154,41 @@ for hero_id in winners:
     h_i1_wr = float(h_i1_["wins"]) / h_i1_["times_bought"]
     h_i2_wr = float(h_i2_["wins"]) / h_i2_["times_bought"]
     h_i3_wr = float(h_i3_["wins"]) / h_i3_["times_bought"]
-    m.extend((h_gpm, h_xpm, h_wr, h_kda, h_hd, h_td, h_hh, h_lh, h_den, int(h_i1), h_i1_wr, int(h_i2),
-              h_i2_wr, int(h_i3), h_i3_wr))
+    m.extend((h_wmd, h_gpm, h_xpm, h_wr, h_kda, h_hd, h_td, h_hh, h_lh, h_den, int(h_i1), h_i1_wr,
+              int(h_i2), h_i2_wr, int(h_i3), h_i3_wr))
+    rest_of_team = [x for x in winners if not x == hero_id]
+    assert len(rest_of_team) == 3
+    dyads_ = [(float(dyads_list[hero_id].get(str(x), dict()).get('wins', 0)) / dyads_list[hero_id].get(str(x), dict())
+               .get('matches', 1)) for x in rest_of_team]
+    m.extend(dyads_)
+
+    matchups_ = [
+        [matchups_list[hero_id][str(x)]['relative_wr'], matchups_list[hero_id][str(x)]['advantage']]
+        for x in losers]
+    # reducing list of lists to a single list
+    matchups_ = [i for sl in matchups_ for i in sl]
+
+    m.extend(matchups_)
+
+m.append(1 if winner == 'radiant' else -1)
 x_in = np.zeros(shape=(1, len(m)))
 x_in[0] = m
 # print "correct: " + str(del_hero_id)
 c_out = network.predict(x_in)
 choices = np.argpartition(c_out[0], -hero_choices)[-hero_choices:]
 
-print(("*"*10) + "\ntheir team: ")
+print(("*" * 10) + "\ntheir team: ")
 for h in losers:
-    print(heroes_name_list[h], end=", ")
+    print(heroes_name_list[heroes_id_dfid_translate[h]], end=", ")
 
-print("\n\n" + ("*"*10) + "\nyour team: ")
+print("\n\n" + ("*" * 10) + "\nyour team: ")
 for h in winners:
-    print(heroes_name_list[h], end=", ")
+    print(heroes_name_list[heroes_id_dfid_translate[h]], end=", ")
 
 print("\n\n")
 print("you should probably pick:")
 
 final_choices = []
-
 
 for i in choices:
     # if i in losers:
@@ -161,8 +196,9 @@ for i in choices:
     # if i in winners:
     #     continue
     final_choices.append((c_out[0][i], heroes_name_list[i]))
+    print('i: ', i)
 
 for prob, hero in sorted(final_choices, reverse=True):
-    print(hero, ' :\t', str(prob*100)+'%')
+    print(hero, ' :\t', str(prob * 100) + '%')
 
 # print(network.predict_classes(x_in))
