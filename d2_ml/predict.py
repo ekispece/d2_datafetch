@@ -16,7 +16,7 @@ from d2_db import db
 # features_per_hero = 16  # hero_id, agpm, axpm, awr, akda, ahd, atd, ahh, alh, adn, item123, item123wr
 # heroes_per_match = 9
 total_features = 226
-hero_choices = 5
+hero_choices = 111
 
 database = db.get_database()
 heroes_list_collection = database.heroes
@@ -87,8 +87,8 @@ for hero_dyad in dyads_list_collection.find():
 for hero_matchup in hero_matchups_list_collection.find():
     matchups_list[hero_matchup['hero_id']] = hero_matchup['matchups']
 
-winners = [109, 29, 111, 5]
-losers = [32, 79, 98, 51, 10]
+winners = [62, 90, 39, 12]
+losers = [38, 53, 20, 80, 33]
 winner = 'radiant'
 
 for hero_id in losers:
@@ -196,7 +196,7 @@ for i in choices:
     # if i in winners:
     #     continue
     final_choices.append((c_out[0][i], heroes_name_list[i]))
-    print('i: ', i)
+    # print('i: ', i)
 
 for prob, hero in sorted(final_choices, reverse=True):
     print(hero, ' :\t', str(prob * 100) + '%')

@@ -39,7 +39,7 @@ def validate_model(d, n):
 # heroes_per_match = 9
 total_features = 226
 
-load_save = True
+load_save = False
 rank_size = 15
 
 print("Building network")
@@ -83,10 +83,13 @@ if load_save:
 print("Loading input info")
 data = np.load("../d2_d.npy")
 print("loaded. Data obj shape:", data.shape)
-val_data_size = int(data.shape[0] * 0.2)
-data_size = data.shape[0] - val_data_size  # 80/20 validation training split
-val_data = data[data_size: data.shape[0], :]
-data = data[0:data_size, :]
+
+# If we were to include validation at training time, then, uncoment this code and call for validate_model
+
+# val_data_size = int(data.shape[0] * 0.2)
+# data_size = data.shape[0] - val_data_size  # 80/20 validation training split
+# val_data = data[data_size: data.shape[0], :]
+# data = data[0:data_size, :]
 
 best_val_acc = -1.0
 for shuf in range(100):
@@ -95,7 +98,8 @@ for shuf in range(100):
     np.random.shuffle(data)
     l = data[:, -1]
     j = Counter(l)
-    max_data = 1250
+    # make sure to set a reasonable max_data value to train the data with
+    max_data = 50
     masks = []
 
     print("Making sure there's isn't too much data imbalance, max labels for classes set as " + str(max_data))
@@ -110,7 +114,8 @@ for shuf in range(100):
         if v > max_data:
             x = 0
             while np.count_nonzero(mask) > max_data:
-                idx = x + 1000
+                # Change x + 1 to a bigger number to increase overall performance
+                idx = x + 1
                 mask[x:idx] = False
                 x = idx
         masks.append(mask)
