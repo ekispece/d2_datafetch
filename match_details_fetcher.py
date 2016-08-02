@@ -1,12 +1,11 @@
 #!/usr/bin/python
-from __future__ import print_function
 from dota2py import api as dota_api
 from d2_db import db
 from multiprocessing.dummy import Pool as ThreadPool
 from requests import exceptions
 from d2_items import useless_items_list
 
-pool = ThreadPool(10)
+pool = ThreadPool(8)
 
 
 def get_match_details(match_id):
@@ -115,16 +114,11 @@ def remove_useless_info(match_detail):
 def parse_match(match_id):
     global match_details_collection
     global match_id_collection
-    if match_details_collection.find_one({"match_id": match_id["match_id"]}):
-        return  # This match is already saved
+#    if match_details_collection.find_one({"match_id": match_id["match_id"]}):
+#        return  # This match is already saved
     try:
         match_detail = remove_useless_info(get_match_details(match_id["match_id"]))
-        match_id_collection.update_one({"match_id": match_id["match_id"]},
-                                       {
-                                           "$set": {
-                                               "fetched": True
-                                           }
-                                       })
+        match_id_collection.delete_one({"match_id": match_id["match_id"]})
         if match_detail is None:
             return
         match_details_collection.insert_one(match_detail)
