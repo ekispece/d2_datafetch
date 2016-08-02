@@ -10,6 +10,7 @@ def extract():
     heroes_dyad_collection = database.heroes_dyad
     heroes_matchups_collection = database.matchups
 
+    dryscrape.start_xvfb()
     session = dryscrape.Session()
     session.set_attribute('auto_load_images', False)
 
