@@ -1,5 +1,3 @@
-from string import lower
-
 from d2_db import db
 
 import dryscrape
@@ -22,7 +20,7 @@ def extract():
     hero_matchups = {}
 
     for heroes in heroes_list.find():
-        hero_url_name = lower(heroes['localized_name']).replace(' ', '-').replace('\'', '')
+        hero_url_name = heroes['localized_name'].lower().replace(' ', '-').replace('\'', '')
         matchups_url_name = 'http://www.dotabuff.com/heroes/' + hero_url_name + '/matchups'
 
         session.visit(matchups_url_name)

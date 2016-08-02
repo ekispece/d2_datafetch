@@ -2,6 +2,8 @@
 from dota2py import api as dota_api
 from d2_db import db
 
+from functools import cmp_to_key as ctk
+
 
 def cmp_hero_name(h1, h2):
     if h1['localized_name'] < h2['localized_name']:
@@ -32,7 +34,7 @@ def fetch():
     else:
         heroes = HeroesFetcher()
         heroes_info = heroes.get_heroes_info()
-        for ix, hero_info in enumerate(sorted(heroes_info, cmp=cmp_hero_name)):
+        for ix, hero_info in enumerate(sorted(heroes_info, key=ctk(cmp_hero_name))):
             hero_info['id_df'] = ix
 
         data.heroes.insert_many(heroes_info)
