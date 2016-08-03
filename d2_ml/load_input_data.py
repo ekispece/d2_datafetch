@@ -167,7 +167,7 @@ def prepare_data():
             mt.append(1 if winner == 'radiant' else -1)
             mt.append(heroes_id_dfid_translate[del_hero_id])
 
-            with open('data.d2', 'ab') as file:
+            with open('data.d2', 'a', newline='', encoding='utf-8') as file:
                 writer = csv.writer(file)
                 writer.writerow(mt)
         m[:] = []
