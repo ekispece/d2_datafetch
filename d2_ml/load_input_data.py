@@ -1,8 +1,7 @@
-import operator
-import numpy as np
 from copy import deepcopy
 
 import datetime
+import csv
 
 from d2_db import db
 
@@ -168,6 +167,7 @@ def prepare_data():
             mt.append(1 if winner == 'radiant' else -1)
             mt.append(heroes_id_dfid_translate[del_hero_id])
 
-            with open('data.d2', 'a') as file:
-                file.write(mt)
+            with open('data.d2', 'ab') as file:
+                writer = csv.writer(file)
+                writer.writerow(mt)
         m[:] = []
