@@ -7,7 +7,14 @@ import datetime
 from d2_db import db
 
 
-# TODO: refactor this to not use too much memory
+def keywithmaxval(d):
+    """ a) create a list of the dict's keys and values;
+        b) return the key with the max value"""
+    v = list(d.values())
+    k = list(d.keys())
+    return k[v.index(max(v['bought']))]
+
+
 def prepare_data():
     database = db.get_database()
     heroes_list_collection = database.heroes
@@ -88,11 +95,12 @@ def prepare_data():
             h_hh = float(h_metric["hero_healing"]) / h_metric["games"]
             h_lh = float(h_metric["last_hits"]) / h_metric["games"]
             h_den = float(h_metric["denies"]) / h_metric["games"]
-            h_i1 = max(h_metric["items"].items(), key=operator.itemgetter(1))[0]
+            h_i1 = keywithmaxval(h_metric['items'])
+            # h_i1 = max(h_metric["items"].items(), key=operator.itemgetter(1))[0]
             del h_metric["items"][h_i1]
-            h_i2 = max(h_metric["items"].items(), key=operator.itemgetter(1))[0]
+            h_i2 = keywithmaxval(h_metric['items'])
             del h_metric["items"][h_i2]
-            h_i3 = max(h_metric["items"].items(), key=operator.itemgetter(1))[0]
+            h_i3 = keywithmaxval(h_metric['items'])
             del h_metric["items"][h_i3]
 
             h_i1_ = items_list[int(h_i1)]
@@ -125,11 +133,12 @@ def prepare_data():
                 h_hh = float(h_metric["hero_healing"]) / h_metric["games"]
                 h_lh = float(h_metric["last_hits"]) / h_metric["games"]
                 h_den = float(h_metric["denies"]) / h_metric["games"]
-                h_i1 = max(h_metric["items"].items(), key=operator.itemgetter(1))[0]
+                h_i1 = keywithmaxval(h_metric['items'])
+                # h_i1 = max(h_metric["items"].items(), key=operator.itemgetter(1))[0]
                 del h_metric["items"][h_i1]
-                h_i2 = max(h_metric["items"].items(), key=operator.itemgetter(1))[0]
+                h_i2 = keywithmaxval(h_metric['items'])
                 del h_metric["items"][h_i2]
-                h_i3 = max(h_metric["items"].items(), key=operator.itemgetter(1))[0]
+                h_i3 = keywithmaxval(h_metric['items'])
                 del h_metric["items"][h_i3]
 
                 h_i1_ = items_list[int(h_i1)]
