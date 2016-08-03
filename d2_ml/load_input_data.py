@@ -73,7 +73,7 @@ def prepare_data():
             print("Processed " + str(processed_matches) + " out of " + str(total_matches) + " Time taken : " + str(
                 end_time - start_time))
             start_time = end_time
-        if processed_matches % 20000 == 0:
+        if processed_matches % 50000 == 0:
             file_num += 1
 
         winner = match["winner"]
@@ -170,7 +170,7 @@ def prepare_data():
             mt.append(1 if winner == 'radiant' else -1)
             mt.append(heroes_id_dfid_translate[del_hero_id])
 
-            with open('data' + str(file_num) + '.d2', 'a', newline='', encoding='utf-8') as file:
+            with open('/d2/input/data' + str(file_num) + '.d2', 'a', newline='', encoding='utf-8') as file:
                 writer = csv.writer(file)
                 writer.writerow(mt)
         m[:] = []

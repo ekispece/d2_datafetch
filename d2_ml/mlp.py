@@ -2,6 +2,7 @@ from __future__ import print_function
 from collections import Counter
 
 import numpy as np
+import pandas
 from keras.layers import Dense, Activation
 from keras.layers.advanced_activations import LeakyReLU
 from keras.layers.core import Dropout
@@ -81,7 +82,8 @@ if load_save:
     network.load_weights("model_mlp.d2")
 
 print("Loading input info")
-data = np.load("../d2_d.npy")
+data = pandas.read_csv("data.tar.gz", header=None, compression='gzip', error_bad_lines=False).values
+
 print("loaded. Data obj shape:", data.shape)
 
 # If we were to include validation at training time, then, uncoment this code and call for validate_model
@@ -99,7 +101,7 @@ for shuf in range(100):
     l = data[:, -1]
     j = Counter(l)
     # make sure to set a reasonable max_data value to train the data with
-    max_data = 50
+    max_data = 1200
     masks = []
 
     print("Making sure there's isn't too much data imbalance, max labels for classes set as " + str(max_data))
@@ -115,7 +117,7 @@ for shuf in range(100):
             x = 0
             while np.count_nonzero(mask) > max_data:
                 # Change x + 1 to a bigger number to increase overall performance
-                idx = x + 1
+                idx = x + 1000
                 mask[x:idx] = False
                 x = idx
         masks.append(mask)
