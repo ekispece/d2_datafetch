@@ -52,7 +52,7 @@ def prepare_data():
     total_matches = match_details_collection.count()
     total_sint_matches = total_matches * 5
 
-    feature_vector = np.zeros(shape=(total_sint_matches, total_features + 1))  # label included
+    # feature_vector = np.zeros(shape=(total_sint_matches, total_features + 1))  # label included
     processed_matches = 0
     feature_num = 0
 
@@ -158,11 +158,7 @@ def prepare_data():
 
             mt.append(1 if winner == 'radiant' else -1)
             mt.append(heroes_id_dfid_translate[del_hero_id])
-            feature_vector[feature_num] = mt
-            feature_num += 1
+
+            with open('data.d2', 'a') as file:
+                file.write(mt)
         m[:] = []
-
-    np.random.shuffle(feature_vector)
-    np.save("d2_d", feature_vector)
-
-
