@@ -7,7 +7,7 @@ from d2_db import db
 
 class ItemsFetcher:
     def __init__(self):
-        dota_api.set_api_key("3A315E5FE932409684A1C2DB288A92C6")  # When possible do substitute this key by your own
+        dota_api.set_api_key("")  # When possible do substitute this key by your own
 
     def get_items_info(self):
         return self.items_tuple(self.get_items())
