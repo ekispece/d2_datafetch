@@ -9,7 +9,7 @@ pool = ThreadPool(8)
 
 
 def get_match_details(match_id):
-    dota_api.set_api_key("3A315E5FE932409684A1C2DB288A92C6")  # When possible do substitute this key by your own
+    dota_api.set_api_key("")  # When possible do substitute this key by your own
     return extract_match_details_info(dota_api.get_match_details(match_id=match_id))
 
 
